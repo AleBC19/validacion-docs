@@ -4,9 +4,8 @@ $db = conectarDB();
 
 $usuario = "";
 $password = "";
-
 $alertas = [];
-$query = "SELECT usuario, password, tipo_usuario FROM usuarios";
+$query = "SELECT correo, password, admin FROM usuarios";
 $resultado = mysqli_query($db, $query);
 
 //echo "<pre>";
@@ -19,12 +18,11 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
     $password =  mysqli_real_escape_string( $db, $_POST["password"]);
 
     if(!$usuario){
-        $alertas[] = "El nombre de usuario es necesario";
+        $alertas[] = "El correo es necesario";
     }
     if(!$password){
         $alertas[] = "El password es necesario";
     }
-    
 }
 
 ?>
@@ -49,14 +47,14 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
                             INICIA SESIÓN
                         </label>
                         <div class="camposLogin">
-                            <label class="label__campos" for="user">Nombre Usuario</label>
+                            <label class="label__campos" for="correo">Correo: </label>
                             <input 
                                 type="text" 
                                 name="usuario" 
                                 id="user">
                         </div>
                         <div class="camposLogin">
-                            <label class="label__campos" for="password">Contraseña del Usuario</label>
+                            <label class="label__campos" for="password">Contraseña: </label>
                             <input 
                             type="password" 
                             name="password"  
