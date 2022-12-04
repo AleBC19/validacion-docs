@@ -57,6 +57,14 @@ h1 {
     margin: 1rem;
     padding: 1rem;
 }
+table {
+    font-size: 1.5rem;
+    border-spacing: 0;
+}
+td,th,tr {
+    text-align: center;
+    padding: 1rem;
+}
 footer, p{
     text-align: center;
 }

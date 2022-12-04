@@ -7,9 +7,11 @@ $correo = "";
 $password = "";
 $alertas = [];
 
+
 if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
     $correo =  mysqli_real_escape_string( $db, $_POST["correo"]);
     $password =  mysqli_real_escape_string( $db, $_POST["password"]);
+
 
     if(!$correo){
         $alertas[] = "El correo es necesario";
@@ -30,7 +32,6 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
                 $_SESSION['usuario'] = $usuario['correo'];
                 $_SESSION['login'] = true;
                 $_SESSION['id'] = $usuario['id_usuario'];
-                debuguear($_SESSION);
                 header('Location: /vistaUsuario.php?id_usuario='.$usuario['id_usuario']);
             } else {
                 $alertas[] = "La contraseña es incorrecta";
@@ -44,9 +45,11 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 ?>
 <?php include_once('templates/head.php') ?>
 <main class="contenedor">
+
     <div class="login">
         <div>
             <img src="img/login.png" alt="" class="loginIMG">
+
         </div>
         <div>
             <h1>Inicia Sesión</h1>
