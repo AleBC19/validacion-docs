@@ -2,7 +2,10 @@
 <?php 
 
 include('config/db.php');
+include('templates/funciones.php');
 $db = conectarDB();
+
+$id_usuario = $_GET["id_usuario"];
 
 $correo = "";
 $password = "";
@@ -13,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $folio = mysqli_real_escape_string($db, $_POST["folio"]);
     $documento = mysqli_real_escape_string($db, $_POST["documento"]);
     
-    $primeraValidación = "NO";
+    $primeraValidacion = "NO";
     $segundaValidacion = "NO";
     $validado = "NO";
     $estatus = "NO VALIDADO";
@@ -26,20 +29,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 
     if(empty($alertas)){
-        $query = "INSERT INTO registros(rfc, nombre, email, tipoBoleto, confirmado, cantidad)";
-            $query .= "VALUES ('$rfc','$nombre','$correo','$costoBoletos','$confirmado','$noBoletos')";
 
-            $resultado = mysqli_query( $db, $query);
+        $query = "INSERT INTO registros(folio, documento, primeraValidacion, segundaValidacion, validado, estatus, id_usuario)";
+        $query .= "VALUES ('$folio','$documento','$primeraValidacion','$segundaValidacion','$validado','$estatus', '$id_usuario')";
+            
+        //debuguear($query);
 
-            if( $resultado ) {
-                header('Location: /boletos/registros.php');
+        $resultado = mysqli_query( $db, $query);
+
+        if( $resultado ) {
+                //header('Location: /boletos/registros.php');
             }
     }
 }
 
-$usuario = $_GET['id_usuario'];
-
-        $query = "SELECT * FROM registros WHERE id_usuario = '${usuario}'";
+        $query = "SELECT * FROM registros WHERE id_usuario = '${id_usuario}'";
         $result = mysqli_query($db, $query);    
 
 ?>
@@ -77,20 +81,18 @@ $usuario = $_GET['id_usuario'];
                 <th>primeraValidacion</th>
                 <th>segundaValidacion</th>
                 <th>Validado</th>
-                <th>Esatus</th>
-                <th>id_usuario</th>
+                <th>Estatus</th>
             </tr>
         </thead>
         <tbody>
             <?php while ($registros = mysqli_fetch_array($result)) :?>
                 <tr>
-                    <td><?php echo $registros['id_usuario'];?></td>
                     <td><?php echo $registros['folio'];?></td>
                     <td><?php echo $registros['documento'];?></td>
                     <td><?php echo $registros['primeraValidacion'];?></td>
                     <td><?php echo $registros['segundaValidacion'];?></td>
                     <td><?php echo $registros['validado'];?></td>
-                    <td><?php echo $registros['status'];?></td>
+                    <td><?php echo $registros['estatus'];?></td>
                 </tr>
             <?php endwhile;?>
         </tbody>
