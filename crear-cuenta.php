@@ -31,7 +31,7 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
     if( empty($alertas) ) {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
         $query = "INSERT INTO usuarios(correo, password, admin)";
-        $query .= "VALUES ('${correo}', '${passwordHash}', 0)";
+        $query .= "VALUES ('${correo}', '${passwordHash}', 1)";
         $resultado = mysqli_query($db, $query);
         
         if( $resultado ) {

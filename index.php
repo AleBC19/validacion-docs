@@ -1,5 +1,5 @@
 <?php
-include('config/db.php');
+require ('config/db.php');
 include('templates/funciones.php');
 
 $db = conectarDB();
@@ -30,7 +30,8 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
                 $_SESSION['usuario'] = $usuario['correo'];
                 $_SESSION['login'] = true;
                 $_SESSION['id'] = $usuario['id_usuario'];
-                header('Location: /vistaUsuario?id_usuario='.$usuario['id_usuario']);
+                debuguear($_SESSION);
+                header('Location: /vistaUsuario.php?id_usuario='.$usuario['id_usuario']);
             } else {
                 $alertas[] = "La contraseña es incorrecta";
             }
