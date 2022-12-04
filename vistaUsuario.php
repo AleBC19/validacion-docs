@@ -42,7 +42,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             }
     }
 }
-
         $query = "SELECT * FROM registros WHERE id_usuario = '${id_usuario}'";
         $result = mysqli_query($db, $query);    
 
@@ -51,6 +50,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <?php include_once('templates/head.php') ?>
 
 <main>
+    <?php foreach ($alertas as $alerta) : ?>
+        <div class="error">
+            <?php echo $alerta; ?>
+        </div>
+    <?php endforeach; ?>
+
     <form action="" method="POST">
         <label for="">
             Documento:
