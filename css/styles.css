@@ -18,6 +18,7 @@ h1 {
     grid-template-columns: 60% 40%;
     gap: 5rem;
 }
+
 .campo {
     display: flex;
     flex-direction: column;
@@ -60,10 +61,18 @@ h1 {
 table {
     font-size: 1.5rem;
     border-spacing: 0;
+    margin-top: 5rem;
+    width: 90%;
+}
+th{
+    background-color: rgb(125, 172, 212);
 }
 td,th,tr {
     text-align: center;
     padding: 1rem;
+}
+tr:nth-child(even) {
+    background-color: rgb(204, 216, 226);
 }
 footer, p{
     text-align: center;

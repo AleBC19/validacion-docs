@@ -1,42 +1,41 @@
 <?php
-require ('config/db.php');
+require('config/db.php');
 include('templates/funciones.php');
 
 $db = conectarDB();
 $correo = "";
 $password = "";
 $alertas = [];
+$resultadoMensaje = $_GET["mensaje"] ?? null;
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $correo =  mysqli_real_escape_string($db, $_POST["correo"]);
+    $password =  mysqli_real_escape_string($db, $_POST["password"]);
 
 
-if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
-    $correo =  mysqli_real_escape_string( $db, $_POST["correo"]);
-    $password =  mysqli_real_escape_string( $db, $_POST["password"]);
-
-
-    if(!$correo){
+    if (!$correo) {
         $alertas[] = "El correo es necesario";
     }
-    if(!$password){
+    if (!$password) {
         $alertas[] = "El password es necesario";
     }
 
-    if( empty($alertas) ) {
+    if (empty($alertas)) {
         $query = "SELECT * FROM usuarios WHERE correo = '${correo}'";
-        $resultado = mysqli_query($db,$query);
-        if( $resultado->num_rows ) {
+        $resultado = mysqli_query($db, $query);
+        if ($resultado->num_rows) {
             $usuario = mysqli_fetch_assoc($resultado);
-            $auth = password_verify( $password, $usuario['password'] );
-           
-            if( $auth ) {
+            $auth = password_verify($password, $usuario['password']);
+
+            if ($auth) {
                 session_start();
                 $_SESSION['usuario'] = $usuario['correo'];
                 $_SESSION['login'] = true;
                 $_SESSION['id'] = $usuario['id_usuario'];
-                header('Location: /vistaUsuario.php?id_usuario='.$usuario['id_usuario']);
+                header('Location: /vistaUsuario.php?id_usuario=' . $usuario['id_usuario']);
             } else {
                 $alertas[] = "La contraseña es incorrecta";
             }
-
         } else {
             $alertas[] = "El usuario no existe";
         }
@@ -53,34 +52,28 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
         </div>
         <div>
             <h1>Inicia Sesión</h1>
-            <form action="" method="POST">  
-            <?php foreach ($alertas as $alerta) : ?>
-                <div class="alerta">
-                    <?php echo $alerta; ?>
-                </div>
-            <?php endforeach; ?>
+            <form action="" method="POST">
+                <?php foreach ($alertas as $alerta) : ?>
+                    <div class="alerta">
+                        <?php echo $alerta; ?>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (intval($resultadoMensaje) === 2) :  ?>
+                    <div class="alerta">
+                        <p>Se ha registrado correctamente</p>
+                    </div>
+                <?php endif; ?>
                 <div class="campo">
                     <label class="campo__label" for="correo">Correo:</label>
-                    <input 
-                        type="correo" 
-                        name="correo" 
-                        id="correo"
-                        class="campo__input">
+                    <input type="correo" name="correo" id="correo" class="campo__input">
                 </div>
                 <div class="campo">
                     <label class="campo__label" for="password">Contraseña:</label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password"
-                        class="campo__input">
+                    <input type="password" name="password" id="password" class="campo__input">
                 </div>
-                <input 
-                    type="submit"
-                    value="Iniciar Sesión"
-                    class="boton">
-                
-                 <div class="campo">
+                <input type="submit" value="Iniciar Sesión" class="boton">
+
+                <div class="campo">
                     <a href="crear-cuenta.php">¿No tienes una cuenta? Crea Una</a>
                 </div>
             </form>
