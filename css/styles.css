@@ -1,6 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap');
 html {
     box-sizing: border-box;
     font-size: 62.5%; /**Permite que 1rem = 10px**/
+    font-family: 'Montserrat', sans-serif;
+}
+h1 {
+    text-align: center;
+    font-size: 5rem;
+    font-weight: 900;
 }
 .contenedor {
     width: min(90%, 120rem);
@@ -11,25 +18,31 @@ html {
     grid-template-columns: 60% 40%;
     gap: 5rem;
 }
-.labelSesion{
-    text-align: center;
-    font-size: 7rem;
-    font-weight: bold;
-    font-family:'Kanit', sans-serif;
-    margin: 2rem;
-}
-.label__campos{
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-.camposLogin{
-    display:flex;
+.campo {
+    display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 2rem;
 }
-footer, p{
+.campo__label {
     text-align: center;
+    font-size: 1.5rem;
+    padding-right: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.campo__input {
+    flex: 1;
+    border-radius: 1rem;
+    padding: 1rem;
+
+}
+
+.campo a {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 3rem;
 }
 
 .alerta {
@@ -38,9 +51,12 @@ footer, p{
     text-align: center;
     text-transform: uppercase;
     font-size: 1.5rem;
-    font-weight: 900;
-    height: 4rem;
+    font-weight: 600;
+    height: 2.5rem;
     border-radius: 1rem;
     margin: 1rem;
     padding: 1rem;
+}
+footer, p{
+    text-align: center;
 }
