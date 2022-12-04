@@ -1,7 +1,7 @@
 html {
     box-sizing: border-box;
     font-size: 62.5%; /**Permite que 1rem = 10px**/
-  }
+}
 .contenedor {
     width: min(90%, 120rem);
     margin: 0 auto;
@@ -30,4 +30,17 @@ html {
 }
 footer, p{
     text-align: center;
+}
+
+.alerta {
+    background-color: rgba(155, 36, 36, 0.836);
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    font-weight: 900;
+    height: 4rem;
+    border-radius: 1rem;
+    margin: 1rem;
+    padding: 1rem;
 }
