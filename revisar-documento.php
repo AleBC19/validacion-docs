@@ -27,10 +27,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $folio = mysqli_real_escape_string($db, $_POST["folio"]);
     $documento = mysqli_real_escape_string($db, $_POST["documento"]);
     
-    $primeraValidacion = "NO";
-    $segundaValidacion = "NO";
-    $validado = "NO";
-    $estatus = "NO VALIDADO";
+    $primeraValidacion = "SI";
+    $segundaValidacion = "SI";
+    $validado = "SI";
+    $estatus = "VALIDADO";
 
     if(!$folio){
         $alertas[] = "Es necesario que ingrese el folio del documento";
@@ -74,7 +74,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             name="id_usuario" 
             id="id_us"
             value = "<?php echo $id_usuario;?>"
-            disabled = True;
+            disabled 
         />
         <label for="">
             Documento:
@@ -84,7 +84,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             name="documento"
             id="documento"
             value = "<?php echo $documento;?>"
-            disabled = True;
+            disabled 
         />
         <label for="">
             Folio del documento:
@@ -95,7 +95,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             id="folio"
             placeholder="Ingrese el folio del documento"
             value = "<?php echo $folio;?>"
-            disabled = True;
+            disabled 
         />
         <label for="">
             primera Validacion:
@@ -123,7 +123,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             name="validado"
             id="validado"
             value = "<?php echo $validado;?>"
-            disabled = True;
+            disabled 
         />
         <label for="">
             Estatus:
@@ -133,7 +133,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             name="estado"
             id="estado"
             value = "<?php echo $estatus;?>"
-            disabled = True;
+            disabled
         />
 
         <input type="submit" value="Validar">
