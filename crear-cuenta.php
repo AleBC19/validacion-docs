@@ -1,59 +1,56 @@
 <?php
 include('config/db.php');
 include('templates/funciones.php');
-
 $db = conectarDB();
+
 $correo = "";
 $password = "";
 $alertas = [];
-
 
 if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
     $correo =  mysqli_real_escape_string( $db, $_POST["correo"]);
     $password =  mysqli_real_escape_string( $db, $_POST["password"]);
 
-
     if(!$correo){
-        $alertas[] = "El correo es necesario";
+        $alertas[] = "El nombre de usuario es necesario";
     }
     if(!$password){
         $alertas[] = "El password es necesario";
     }
 
-    if( empty($alertas) ) {
-        $query = "SELECT * FROM usuarios WHERE correo = '${correo}'";
-        $resultado = mysqli_query($db,$query);
-        if( $resultado->num_rows ) {
-            $usuario = mysqli_fetch_assoc($resultado);
-            $auth = password_verify( $password, $usuario['password'] );
-           
-            if( $auth ) {
-                session_start();
-                $_SESSION['usuario'] = $usuario['correo'];
-                $_SESSION['login'] = true;
-                $_SESSION['id'] = $usuario['id_usuario'];
-                header('Location: /vistaUsuario?id_usuario='.$usuario['id_usuario']);
-            } else {
-                $alertas[] = "La contraseña es incorrecta";
-            }
+    $queryExisteUser = "SELECT * from usuarios WHERE correo = '${correo}' LIMIT 1";
+    $resultadoExiste = mysqli_query($db, $queryExisteUser);
+    if( $resultadoExiste->num_rows > 0) {
+        $alertas[] = "El correo ". $correo ." ya ha sido registrado"; 
+    }
 
-        } else {
-            $alertas[] = "El usuario no existe";
+    if( strlen($password) < 8 ) {
+        $alertas[] = "El password debe tener al menos 8 caracteres";
+    }
+
+    if( empty($alertas) ) {
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+        $query = "INSERT INTO usuarios(correo, password, admin)";
+        $query .= "VALUES ('${correo}', '${passwordHash}', 0)";
+        $resultado = mysqli_query($db, $query);
+        
+        if( $resultado ) {
+            echo "<script>alert('Se ha registrado correctamente')</script>";
+            header('Location: /');
         }
     }
 }
 ?>
+
 <?php include_once('templates/head.php') ?>
 <main class="contenedor">
-
     <div class="login">
         <div>
             <img src="img/login.png" alt="" class="loginIMG">
-
         </div>
         <div>
-            <h1>Inicia Sesión</h1>
-            <form action="" method="POST">  
+            <h1>Cree una cuenta</h1>
+            <form action="" method="POST">
             <?php foreach ($alertas as $alerta) : ?>
                 <div class="alerta">
                     <?php echo $alerta; ?>
@@ -77,11 +74,10 @@ if( $_SERVER["REQUEST_METHOD"] == "POST" ) {
                 </div>
                 <input 
                     type="submit"
-                    value="Iniciar Sesión"
-                    class="boton">
-                
-                 <div class="campo">
-                    <a href="crear-cuenta.php">¿No tienes una cuenta? Crea Una</a>
+                    value="Registrarme"
+                    class="Iniciar Sesión">
+                <div class="campo">
+                    <a href="index.php">¿Ya tienes una cuenta? Inicia Sesión</a>
                 </div>
             </form>
         </div>
