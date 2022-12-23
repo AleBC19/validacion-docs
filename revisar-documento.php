@@ -1,18 +1,17 @@
-
 <?php 
-
 include('config/db.php');
 include('templates/funciones.php');
 $db = conectarDB();
 
-$id_usuario = $_GET["id_usuario"];
+$folio = $_GET["folio"];
 
-$correo = "";
-$password = "";
+if( !$folio ) {
+    header('Location: /validacion-docs2/admin.php');
+}
 
 $alertas = [];
 
-$query = "SELECT * FROM registros WHERE id_usuario = '${id_usuario}'";
+$query = "SELECT * FROM registros WHERE folio = '${folio}'";
 $result = mysqli_query($db, $query);  
 $usuario = mysqli_fetch_assoc($result);
 
@@ -22,42 +21,49 @@ $primeraValidacion = $usuario['primeraValidacion'];
 $segundaValidacion = $usuario['segundaValidacion'];
 $validado = $usuario['validado'];
 $estatus = $usuario['estatus'];
+$validate;
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $folio = mysqli_real_escape_string($db, $_POST["folio"]);
-    $documento = mysqli_real_escape_string($db, $_POST["documento"]);
-    
-    $primeraValidacion = "SI";
-    $segundaValidacion = "SI";
-    $validado = "SI";
-    $estatus = "VALIDADO";
+    $primeraValidacion = mysqli_real_escape_string($db, strtoupper($_POST["primeraValidacion"]));
+    $segundaValidacion = mysqli_real_escape_string($db, strtoupper($_POST["segundaValidacion"]));
 
-    if(!$folio){
-        $alertas[] = "Es necesario que ingrese el folio del documento";
+    if(!$primeraValidacion){
+        $alertas[] = "Es necesario que indique la primera revision del documento";
     }
-    if(!$documento){
-        $alertas[] = "Es necesario que ingrese el nombre del documento";
+    if(!$primeraValidacion){
+        $alertas[] = "Es necesario que indique la segunda revision del documento";
     }
 
     if(empty($alertas)){
-
-        $query = "UPDATE registros SET folio = '$folio', documento = '$documento', primeraValidacion = '$primeraValidacion'";
-        $query .= ",segundaValidacion = '$segundaValidacion', validado = '$validado', estatus = '$estatus', id_usuario = '$id_usuario')";
-            
-        //debuguear($query);
-
+        $query = "UPDATE registros SET primeraValidacion = '$primeraValidacion', segundaValidacion = '$segundaValidacion' ";
+        $query .= "WHERE folio = '${folio}'";
         $resultado = mysqli_query( $db, $query);
 
+        $queryUpdateRevisiones = "SELECT primeraValidacion, segundaValidacion from registros ";
+        $queryUpdateRevisiones .= "WHERE folio = '${folio}'";
+        $result = mysqli_query($db, $queryUpdateRevisiones);
+        $validate = mysqli_fetch_array($result);
+        //debuguear($validate);
+        if( $validate["primeraValidacion"] == "SI" && $validate["segundaValidacion"] == "SI") {
+            $actualizarRevision = "UPDATE registros SET validado = 'SI', estatus = 'VALIDADO' "; 
+            $actualizarRevision .= "WHERE folio = '${folio}'";
+            $resultadoUpdateRevision = mysqli_query($db, $actualizarRevision);
+
+            $queryGetUser = "SELECT correo FROM usuarios WHERE id_usuario = " . $usuario['id_usuario'];
+            $resultGetUser = mysqli_query($db, $queryGetUser);
+            $correoUser = mysqli_fetch_array($resultGetUser);
+            $emailFrom = $correoUser['correo'];
+            //Enviar notificacion
+            sendMail( $emailFrom, $folio );
+        }
+
         if( $resultado ) {
-                //header('Location: /boletos/registros.php');
-            }
+            header('Location: /validacion-docs2/vistaAdmin.php?admin=1&mensaje=2');
+        }
     }
 }  
-
 ?>
-
 <?php include_once('templates/head.php') ?>
-
 <main>
     <?php foreach ($alertas as $alerta) : ?>
         <div class="error">
@@ -65,78 +71,79 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         </div>
     <?php endforeach; ?>
 
-    <form action="" method="POST">
-        <label for="">
-            ID Usuario:
-        </label>
-        <input 
-            type="text" 
-            name="id_usuario" 
-            id="id_us"
-            value = "<?php echo $id_usuario;?>"
-            disabled 
-        />
-        <label for="">
-            Documento:
-        </label>
-        <input 
-            type="text"
-            name="documento"
-            id="documento"
-            value = "<?php echo $documento;?>"
-            disabled 
-        />
-        <label for="">
-            Folio del documento:
-        </label>
-        <input 
-            type="text"
-            name="folio"
-            id="folio"
-            placeholder="Ingrese el folio del documento"
-            value = "<?php echo $folio;?>"
-            disabled 
-        />
-        <label for="">
-            primera Validacion:
-        </label>
-        <input 
-            type="text"
-            name="primeraValidacion"
-            id="primeraValidacion"
-            value = "<?php echo $primeraValidacion;?>"
-        />
-        <label for="">
-            segunda Validacion:
-        </label>
-        <input 
-            type="text"
-            name="segundaValidacion"
-            id="segundaValidacion"
-            value = "<?php echo $segundaValidacion;?>"
-        />
-        <label for="">
-            Validacion:
-        </label>
-        <input 
-            type="text"
-            name="validado"
-            id="validado"
-            value = "<?php echo $validado;?>"
-            disabled 
-        />
-        <label for="">
-            Estatus:
-        </label>
-        <input 
-            type="text"
-            name="estado"
-            id="estado"
-            value = "<?php echo $estatus;?>"
-            disabled
-        />
+    <form method="POST">
+        <div class="campo">
+            <label class="campo__label">ID Usuario:</label>
+            <input 
+                type="text" 
+                name="id_usuario" 
+                value = "<?php echo $usuario['id_usuario'];?>"
+                disabled/>
+        </div>
 
-        <input type="submit" value="Validar">
+        <div class="campo">
+            <label class="campo__label">Documento: </label>
+            <input 
+                type="text"
+                name="documento"
+                id="documento"
+                value = "<?php echo $documento;?>"
+                disabled/>
+        </div>
+
+        <div class="campo">
+            <label class="campo__label">Folio del documento:</label>
+            <input 
+                type="text"
+                name="folio"
+                id="folio"
+                placeholder="Ingrese el folio del documento"
+                value = "<?php echo $folio;?>"
+                disabled/>
+        </div>
+
+        <div class="campo">
+            <label class="campo__label">primera Validacion:</label>
+            <input 
+                type="text"
+                name="primeraValidacion"
+                id="primeraValidacion"
+                value = "<?php echo $primeraValidacion;?>"
+                <?php 
+
+                ?>/>
+        </div>
+
+        <div class="campo">
+            <label class="campo__label">segunda Validacion:</label>
+            <input 
+                type="text"
+                name="segundaValidacion"
+                id="segundaValidacion"
+                value = "<?php echo $segundaValidacion;?>"
+                />
+        </div>
+
+        <div class="campo">            
+            <label class="campo__label">Validacion:</label>
+            <input 
+                type="text"
+                name="validado"
+                id="validado"
+                value = "<?php echo $validado;?>"
+                disabled/>
+        </div>
+
+        <div class="campo">
+            <label class="campo__label">Estatus:</label>
+            <input 
+                type="text"
+                name="estado"
+                id="estado"
+                value = "<?php echo $estatus;?>"
+                disabled/>
+        </div>
+        <input class="boton" type="submit" value="Validar">
     </form>
-    
 </main>
+<?php include_once('./templates/footer.php'); ?>
